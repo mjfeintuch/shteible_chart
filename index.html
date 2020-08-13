@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="shortcut icon" type="image/x-icon" href="icon.jpg" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>The Shteible Chart | Beta</title>
+  </head>
+  <body>
+    <div class="container mt-3 mb-5 text-center">
+
+      <div class="hideOnPrint">
+        <h2 ><img src="icon.jpg" alt=""><span class="u">The Shteible Chart</span><sup class="text-secondary font-weight-light"> Beta</sup></h2>
+        <label for="searchTextField" >Street Address: </label><input id="searchTextField" type="text" size="40" placeholder="Enter a street address " autocomplete="on" runat="server" />  
+        <label for="nameInput" >Title (Optional): </label><input id="nameInput" size="40" placeholder="The Goldberg Family Shteible" value=""/>
+        <input type="hidden" id="city2" name="city2" />
+        <input type="hidden" id="cityLat" name="cityLat" />
+        <input type="hidden" id="cityLng" name="cityLng" />
+        <input type="hidden" id="elevation" name="elevation" />
+      
+        <div>
+          <button id="calculate" onclick="calculate()">Calculate Chart</button>
+          <button id="printButton" onclick="window.print();return false;" hidden>Print Chart</button>
+           <button  type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Options</button>
+        </div>
+            
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body mt-2">
+            <div class="row text-left">
+              <div class="col">
+                <div class="u">Morning</div>
+                <div><input type="checkbox" class="checkbox" id="AlosHashachar"> Alos HaShachar °16.1</div>
+                <div><input type="checkbox" class="checkbox" id="Misheyakir10Point2Degrees"> Misheyakir °10.2</div>
+                <div><input type="checkbox" class="checkbox" id="SeaLevelSunrise" checked> Neitz Hachama</div>
+              </div>
+              
+              <div class="col">
+                <div class="u">Sof Zman</div>
+                <div><input type="checkbox" class="checkbox" id="SofZmanShmaMGA"> S"Z Krias Shema MG"A</div>
+                <div><input type="checkbox" class="checkbox" id="SofZmanShmaGRA" checked> S"Z Krias Shema GR"A</div>
+                <div><input type="checkbox" class="checkbox" id="SofZmanTfilaMGA"> S"Z Teffila MG"A</div>
+                <div><input type="checkbox" class="checkbox" id="SofZmanTfilaGRA" checked> S"Z Teffila GR"A</div>
+              </div>
+
+              <div class="col">
+                <div class="u">Afternoon</div>
+                <div><input type="checkbox" class="checkbox" id="Chatzos"> Chatzos</div>
+                <div><input type="checkbox" class="checkbox" id="MinchaGedolaGreaterThan30"> Mincha Gedolah</div>
+                <div><input type="checkbox" class="checkbox" id="MinchaKetanaBaalHatanya"> Mincha Kitana GR"A</div>
+                <div><input type="checkbox" class="checkbox" id="MinchaKetana72Minutes"> Mincha Kitana R"T</div>
+                <div><input type="checkbox" class="checkbox" id="PlagHaminchaBaalHatanya"> Plag Hamincha</div>
+                <div><input type="checkbox" class="checkbox" id="PlagHamincha72Minutes"> Plag Hamincha 72</div>
+                <div><input type="checkbox" class="checkbox" id="CandleLighting" checked> Hadlokas Neiros - 18 Minutes</div>
+ 
+              </div>
+
+              <div class="col">
+                <div class="u">Evening</div>
+                <div><input type="checkbox" class="checkbox" id="SeaLevelSunset" checked> Shkias HaChama</div>
+                <div><input type="checkbox" class="checkbox" id="Tzais"> Tzais - 3 Stars</div>
+                <div><input type="checkbox" class="checkbox" id="Tzais60"> Tzais - 60 Minutes</div>
+                <div><input type="checkbox" class="checkbox" id="Tzais72" checked> Tzais - R"T 72 Minutes</div>
+              </div>
+
+              <div class="col">
+                <div class="u">Other</div>
+                <div><input type="checkbox" class="checkbox" id="DafYomi" checked> Daf Hayomi</div>
+                <div><input type="checkbox" class="checkbox" id="YomTov" checked> Yom Tov</div>
+                <div><input type="checkbox" class="checkbox" id="Omer" checked> Sefiras HaOmer</div>
+                <div><input type="checkbox" class="checkbox" id="Date" checked> Date</div>
+                <div><input type="checkbox" class="checkbox" id="seconds" > Show Seconds</div>
+
+              </div>
+
+            </div>
+            
+            
+            <p class="text-center text-warning mt-2 mb-0">Selecting more than 10 zmanim may require resizing the scale or margins in order to achieve printing to one page.</p>
+            <p class="m-0 p-0">A special thanks to <a href="https://github.com/BehindTheMath/KosherZmanim">Aryeh Berman</a>, Eliyahu Hershfeld of <a href="https://kosherjava.com/">KosherJava</a>, and the enitre FrumDevs #zmanim team.</p>
+            <a class="my-1" href="https://forms.gle/EZhkVnfZAjDDtCtw9">Contact Us | Feedback | Questions | Comments</a>
+          </div>
+        </div>
+        <hr>
+       
+        <img id="sample" class= "img-fluid" src="sample.jpg" alt="">
+        <h2 id="warning" class="text-danger mt-2" hidden>Please select a valid location.</h2>
+      </div>
+      
+      <h4 class="display-1" id="loading" hidden>Please Wait</h4>
+
+      <div id="print" class="print text-center mt-2 p-2" hidden>
+
+        <div class="row mx-1 hideOnPrint justify-content-between">
+          <button  class="col-2" id="nextWeek" onclick="previousWeek()">Previous Week</button>
+          <button class="col-2 " id="nextWeek" onclick="nextWeek()">Next Week</button>
+        </div>
+
+        <h1 id="name" class="p-0 m-0"></h1>
+        <h5 id="city" class="p-0 m-0"></h5>
+        <h4 id="parsha" class="p-0 m-0 ">פרשת שמות - פסח</h4>
+        <p id="moladDisplay" class="p-0 m-0"></p>
+        <table id="chart" class="mt-2 table table-sm table-bordered mb-1">
+            <thead>
+                
+              <tr class="dayOfWeek">
+                <th scope="col"></th>
+                <th class="0" scope="col"></th>
+                <th class="1" scope="col"></th>
+                <th class="2" scope="col"></th>
+                <th class="3" scope="col"></th>
+                <th class="4" scope="col"></th>
+                <th class="5" scope="col"></th>
+                <th class="6" scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr class="YomTov">
+                    <th scope="row"></th>
+                    <td class="0"></td>
+                    <td class="1"></td>
+                    <td class="2"></td>
+                    <td class="3"></td>
+                    <td class="4"></td>
+                    <td class="5"></td>
+                    <td class="6"></td>
+                  </tr>
+              <tr class="Date ">
+                <th scope="row"></th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+             
+              <tr class="DafYomi">
+                <th scope="row">דף היומי</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Omer" >
+                <th scope="row">ספירת העומר</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="AlosHashachar">
+                <th scope="row">עלות השחר</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Misheyakir10Point2Degrees">
+                <th scope="row">משיכיר</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              
+              <tr class="SeaLevelSunrise">
+                <th scope="row">נץ החמה</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="SofZmanShmaMGA">
+                <th scope="row">ס"ז קריאת שמע מג"א</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="SofZmanShmaGRA">
+                <th scope="row">ס"ז קריאת שמע גר"א</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="SofZmanTfilaMGA">
+                <th scope="row">ס"ז תפילה מג"א</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="SofZmanTfilaGRA">
+                <th scope="row">ס"ז תפילה גר"א</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Chatzos">
+                <th scope="row">חצות</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="MinchaGedolaGreaterThan30">
+                <th scope="row">מנחה גדולה</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="MinchaKetanaBaalHatanya">
+                <th scope="row">מנחה קטנה גר"א ובה"ת</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="MinchaKetana72Minutes">
+                <th scope="row">מנחה קטנה ר"ת</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+
+              <tr class="PlagHaminchaBaalHatanya">
+                <th scope="row">פלג המנחה</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="PlagHamincha72Minutes">
+                <th scope="row">פלג המנחה 72</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="CandleLighting">
+                <th scope="row">הדלקת נרות</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="SeaLevelSunset">
+                <th scope="row">שקיעה</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Tzais">
+                <th scope="row">צאת הכוכבים</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Tzais60">
+                <th scope="row">צאת הכוכבים 60</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+              <tr class="Tzais72">
+                <th scope="row">צאת הכוכבים ר"ת</th>
+                <td class="0"></td>
+                <td class="1"></td>
+                <td class="2"></td>
+                <td class="3"></td>
+                <td class="4"></td>
+                <td class="5"></td>
+                <td class="6"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="footer p-0 m-0"><img src="icon.jpg" alt="">The Shteible Chart &copy; 2020  https://shteible.now.sh/ <div class="p-0 m 0">This project is in beta, please double check zmanim for accuracy.</div> <div class=" p-0 m-0" style="font-size: 1.2em;"> לוח זה מתוכנה לעילוי נשמת ר' שמואל ב''ר משה פיינטוך ת.נ.צ.ב.ה</div></div>
+        </div>
+      </div> 
+    </div>
+
+    
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@1.23.0/build/global/luxon.min.js" integrity="sha256-YOyhQydrbKaJNB0uRhAtfMUXkVU/+KcGH+ruDrm/BUk=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/kosher-zmanim/dist/kosher-zmanim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.28/moment-timezone-with-data.min.js" integrity="sha256-IWYg4uIC8/erItNXYvLtyYHioRi2zT1TFva8qaAU/ww=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFivaNpJ5NKvxhlieB34vuE-fHoN9xwH4&libraries=places"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    <script src="html2canvas.min.js" ></script>
+    <script src="script.js"></script>
+
+    
+  </body>
+  
+</html>
